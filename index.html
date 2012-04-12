@@ -15,7 +15,12 @@
 <script src="ajax_model.js" type="text/javascript" charset=></script>
 <script type="text/javascript" charset="utf-8">
 	var obj = Object.create(Digi);
+	var obj2 = Object.create(Digi);
 	obj.debug = true;
+	obj.bodyObj = 'hello';
+	obj2.bodyObj = 'world';
+	obj.ajax.getData('model.json', 'post');
+	obj2.ajax.getData('google.com', 'get');
 	$(document).ready(function () {
 		$('body').on('click', 'a.updatePage', function (e) {
 			e.preventDefault();

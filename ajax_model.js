@@ -9,7 +9,7 @@ var ajaxModel = {
 	"body": {
 		"update": {
 			"html": [
-				{   // this object does updates large blocks of code
+				{   // this object updates large blocks of code
 					"id": "mainTitle",
 					"value": "Title Was Updated"
 				},
@@ -50,22 +50,38 @@ if (!Object.create) {
 		return new F();
 	};
 }
-
+/**
+This is model for ajax requests. It reduces the need to always write custom ajax handlers and custom callbacks since the json is always structured the
+same way. The ajax class contains the built in functionality to update and replace content and code on the page. The selectors for the areas being
+update by the ajax call are included in the ajax json as a hash table along with the new content.
+*/
 var Digi = Digi || {};
 
 /** debug default state is false */
-Digi.debug = true;
+Digi.debug = false;
 
+/**
+ *	debug console that won't break in early versions of IE
+ *	@param {String|Object} message the debug message to be displayed in the browser's console
+ *	@param {String} [type="log"] type of message that is being displayed. Options are
+ *								 log, object, error
+ *	@param {String} [quiet] when displaying an error setting this value to true will act like a warning
+ *							this is helpful when you don't want an error to stop javascript executing
+ *	@author Michael Turnwall
+ */
 Digi.logger = function (message, type) {
     if (this.debug && typeof console !== 'undefined') {
         switch (type) {
             case 'error':
-                console.error(message);
+				if (typeof arguments[2] === 'undefined') {
+					throw new Error(message);
+				} else {
+					console.warn(message);
+				}
                 break;
             case 'object':
                 console.dir(message);
                 break;
-            case 'log':
             default:
                 console.log(message);
         }
@@ -74,7 +90,13 @@ Digi.logger = function (message, type) {
     return false;
 };
 
+/**
+ *	This is model for ajax requests. It reduces the need to always write custom ajax handlers and custom callbacks since the json is always structured the
+ *	same way. The ajax class contains the built in functionality to update and replace content and code on the page. The selectors for the areas being
+ *	update by the ajax call are included in the ajax json as a hash table along with the new content.
+ */
 Digi.ajax = (function () {
+	var that;
 	/**
 	 *	convert JSON from a string to object and back again
 	 *	@param data JSON data to be converted
@@ -93,15 +115,18 @@ Digi.ajax = (function () {
 		bodyObj: '',
 		updateContent: function (html) {
 			var el, i;
+			if (typeof html === 'undefined') {
+				return false;
+			}
 			for (i=0,z=html.length; i<z; i++) {
 				try {
 					el = $('#' + html[i].id);
 					if (!el.length) {
-						throw new Error('Couldn\'t find an element with an ID of ' + html[i].id);
+						Digi.logger('Line 72 - Couldn\'t find an element with an ID of ' + html[i].id, 'error', true);
 					}
 					el.html(html[i].value);
 				} catch (err) {
-					console.error(err.name + ' ' + err.message);
+					Digi.logger(err.name + ' ' + err.message, 'error');
 				}
 			}
 		},
@@ -123,16 +148,31 @@ Digi.ajax = (function () {
 		},
 		handleResponse: function (data) {
 			this.data = data;
-			this.updateContent(this.data.body.update.html);
-			this.replaceContent(this.data.body.replace);
+			if (this.data.body.update.html) {
+				this.updateContent(this.data.body.update.html);
+			}
+			if (this.data.body.replace) {
+				this.replaceContent(this.data.body.replace);
+			};
 		},
 		handleError: function () {
-			console.log('handleError');
+			
 		},
+		/**
+		 *	make an ajax call to get json data for page update
+		 *	@param {String} url the url the ajax will get data from
+		 *	@param {String} method type of ajax call GET | POST
+		 *	@param {Object }[parameters] query string to send to the server as an object
+		 */
 		getData: function (url, method, parameters) {
-			var that = this;
-			$.ajax({
-				type: method.toUpperCase(),
+			var type = (typeof method !== 'undefined') ? method.toUpperCase() : 'GET';
+			that = this;
+			// if user is making changes quickly abort the previous request
+			if (this.jxhr) {
+				this.jxhr.abort();
+			}
+			this.jxhr = $.ajax({
+				type: type,
 				url: url,
 				data: parameters || '',
 				dataType: 'json',
@@ -140,11 +180,11 @@ Digi.ajax = (function () {
 					that.handleResponse(data);
 				},
 				error: function (jqXHR, textStatus, errorThrown) {
-					Digi.logger('error ' + errorThrown);
-					that.handleError();
+					Digi.logger('(Line 97) ' + jqXHR.status + ': ' + errorThrown, 'error');
+					that.handleError(textStatus, errorThrown);
 				}
 			});
 		},
-		version: '0.1'
+		version: '0.2'
 	};
 })();
