@@ -94,6 +94,8 @@ Digi.logger = function (message, type) {
  *	This is model for ajax requests. It reduces the need to always write custom ajax handlers and custom callbacks since the json is always structured the
  *	same way. The ajax class contains the built in functionality to update and replace content and code on the page. The selectors for the areas being
  *	update by the ajax call are included in the ajax json as a hash table along with the new content.
+ *	@author Michael Turnwall
+ *	@namespace Digi.ajax
  */
 Digi.ajax = (function () {
 	var that;
@@ -153,7 +155,7 @@ Digi.ajax = (function () {
 			}
 			if (this.data.body.replace) {
 				this.replaceContent(this.data.body.replace);
-			};
+			}
 		},
 		handleError: function () {
 			
@@ -186,5 +188,57 @@ Digi.ajax = (function () {
 			});
 		},
 		version: '0.2'
+	};
+})();
+
+/**
+ *	download handlebar templates and cache them for ajax calls
+ *	@author Michael Turnwall
+ *	@namespace Digi.template
+ */
+Digi.template = (function () {
+	var ajax = Object.create(Digi);
+	var path = 'js/handlebars/templates/';
+	var extension = '.handlebars';
+	var initalContent = {
+		title: 'Page Updated',
+		content: 'This is new content',
+		formValue: 'Jane Doe'	
+	};
+	return {
+		version: '0.1',
+		cache: {},
+		fetch: function (name) {
+			var that = this;
+			if (this.isCached(name)) {
+				this.render(this.cache[name], name);
+			} else {
+				$.get((path + name + extension), function (data) {
+					that.render(data, name);
+				});
+				// $.ajax({
+				// 	type: 'GET',
+				// 	url: path + name,
+				// 	dataType: 'html',
+				// 	success: function (data) {
+				// 		that.render(data, name);
+				// 	}
+				// });
+			}
+		},
+		render: function (data, name, callback) {
+			var source   = data;
+			var template = Handlebars.compile(data);
+			$('#main').html(template(initalContent));
+			if (!this.isCached(name)) {
+				this.setCache(name, data);
+			}
+		},
+		isCached: function (name) {
+			return !!this.cache[name];
+		},
+		setCache: function (key, value) {
+			this.cache[key] = value;
+		}
 	};
 })();
