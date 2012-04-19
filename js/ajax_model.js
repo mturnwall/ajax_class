@@ -1,3 +1,5 @@
+/*jshint onevar: true, sub: true, curly: true */
+/*global Handlebars: true*/
 var ajaxModel = {
 	"head": {
 		"status": 200, // is the http status code for the ajax call, can convey errors to the front-end
@@ -37,9 +39,9 @@ var ajaxModel = {
 };
 
 /**
- *	Polyfill for Object.create()
- *	use this to create new objects
- */
+*	Polyfill for Object.create()
+*	use this to create new objects
+*/
 if (!Object.create) {
 	Object.create = function (o) {
 		if (arguments.length > 1) {
@@ -61,14 +63,14 @@ var Digi = Digi || {};
 Digi.debug = false;
 
 /**
- *	debug console that won't break in early versions of IE
- *	@param {String|Object} message the debug message to be displayed in the browser's console
- *	@param {String} [type="log"] type of message that is being displayed. Options are
- *								 log, object, error
- *	@param {String} [quiet] when displaying an error setting this value to true will act like a warning
- *							this is helpful when you don't want an error to stop javascript executing
- *	@author Michael Turnwall
- */
+*	debug console that won't break in early versions of IE
+*	@param {String|Object} message the debug message to be displayed in the browser's console
+*	@param {String} [type="log"] type of message that is being displayed. Options are
+*									log, object, error
+*	@param {String} [quiet] when displaying an error setting this value to true will act like a warning
+*							this is helpful when you don't want an error to stop javascript executing
+*	@author Michael Turnwall
+*/
 Digi.logger = function (message, type) {
     if (this.debug && typeof console !== 'undefined') {
         switch (type) {
@@ -91,20 +93,20 @@ Digi.logger = function (message, type) {
 };
 
 /**
- *	This is model for ajax requests. It reduces the need to always write custom ajax handlers and custom callbacks since the json is always structured the
- *	same way. The ajax class contains the built in functionality to update and replace content and code on the page. The selectors for the areas being
- *	update by the ajax call are included in the ajax json as a hash table along with the new content.
- *	@author Michael Turnwall
- *	@namespace Digi.ajax
- */
+*	This is model for ajax requests. It reduces the need to always write custom ajax handlers and custom callbacks since the json is always structured the
+*	same way. The ajax class contains the built in functionality to update and replace content and code on the page. The selectors for the areas being
+*	update by the ajax call are included in the ajax json as a hash table along with the new content.
+*	@author Michael Turnwall
+*	@namespace Digi.ajax
+*/
 Digi.ajax = (function () {
 	var that;
 	/**
-	 *	convert JSON from a string to object and back again
-	 *	@param data JSON data to be converted
-	 *	@param dir the direction to convert the JSON
-	 *	@author Michael Turnwall
-	 */
+	*	convert JSON from a string to object and back again
+	*	@param data JSON data to be converted
+	*	@param dir the direction to convert the JSON
+	*	@author Michael Turnwall
+	*/
 	function convert(data, dir) {
 		if (dir === 'toJSON') {
 			return JSON.parse(data);
@@ -116,7 +118,7 @@ Digi.ajax = (function () {
 		data: {},
 		bodyObj: '',
 		updateContent: function (html) {
-			var el, i;
+			var el, i, z;
 			if (typeof html === 'undefined') {
 				return false;
 			}
@@ -133,7 +135,7 @@ Digi.ajax = (function () {
 			}
 		},
 		replaceContent: function (replace) {
-			var forms, content, i;
+			var forms, content, i, z;
 			forms = replace.forms;
 			content = replace.content;
 			if (typeof forms !== 'undefined') {
@@ -161,11 +163,11 @@ Digi.ajax = (function () {
 			
 		},
 		/**
-		 *	make an ajax call to get json data for page update
-		 *	@param {String} url the url the ajax will get data from
-		 *	@param {String} method type of ajax call GET | POST
-		 *	@param {Object }[parameters] query string to send to the server as an object
-		 */
+		*	make an ajax call to get json data for page update
+		*	@param {String} url the url the ajax will get data from
+		*	@param {String} method type of ajax call GET | POST
+		*	@param {Object }[parameters] query string to send to the server as an object
+		*/
 		getData: function (url, method, parameters) {
 			var type = (typeof method !== 'undefined') ? method.toUpperCase() : 'GET';
 			that = this;
@@ -197,39 +199,36 @@ Digi.ajax = (function () {
  *	@namespace Digi.template
  */
 Digi.template = (function () {
-	var ajax = Object.create(Digi);
-	var path = 'js/handlebars/templates/';
-	var extension = '.handlebars';
-	var initalContent = {
-		title: 'Page Updated',
-		content: 'This is new content',
-		formValue: 'Jane Doe'	
-	};
+	var ajax = Object.create(Digi),
+	// testing content
+		content = {
+			title: 'Page Updated',
+			content: 'This is new content',
+			formValue: 'Jane Doe'	
+		};
 	return {
 		version: '0.1',
 		cache: {},
+		path: 'js/handlebars/templates/',	// needs trailing slash
+		extension: '.handlebars',			// needs the period
 		fetch: function (name) {
-			var that = this;
+			var that = this,
+				url = this.path + name + this.extension;
 			if (this.isCached(name)) {
+				console.log(this.cache[name]);
+				content.title = 'Template Cached';
 				this.render(this.cache[name], name);
 			} else {
-				$.get((path + name + extension), function (data) {
+				content.title = 'Template Not Cached';
+				$.get(url, function (data) {
 					that.render(data, name);
 				});
-				// $.ajax({
-				// 	type: 'GET',
-				// 	url: path + name,
-				// 	dataType: 'html',
-				// 	success: function (data) {
-				// 		that.render(data, name);
-				// 	}
-				// });
 			}
 		},
 		render: function (data, name, callback) {
-			var source   = data;
-			var template = Handlebars.compile(data);
-			$('#main').html(template(initalContent));
+			var source = data,
+				template = Handlebars.compile(data);
+			$('#main').html(template(content));
 			if (!this.isCached(name)) {
 				this.setCache(name, data);
 			}
