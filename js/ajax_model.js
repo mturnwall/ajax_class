@@ -200,8 +200,7 @@ Digi.ajax = (function () {
  */
 Digi.template = (function () {
 	var ajax = Object.create(Digi),
-	// testing content
-		content = {
+		content = { // content for testin gp
 			title: 'Page Updated',
 			content: 'This is new content',
 			formValue: 'Jane Doe'	
@@ -211,11 +210,13 @@ Digi.template = (function () {
 		cache: {},
 		path: 'js/handlebars/templates/',	// needs trailing slash
 		extension: '.handlebars',			// needs the period
+		fetchData: function (url) {
+			this.render();
+		},
 		fetch: function (name) {
 			var that = this,
 				url = this.path + name + this.extension;
 			if (this.isCached(name)) {
-				console.log(this.cache[name]);
 				content.title = 'Template Cached';
 				this.render(this.cache[name], name);
 			} else {

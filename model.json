@@ -32,6 +32,13 @@
 					"value": "1234567890"
 				}
 			]
+		},
+		"templates": {
+			"test": { 
+				"title": "Page Updated",
+				"content": "This is new content",
+				"formValue": "Jane Doe"
+			}
 		}
 	}
 }
