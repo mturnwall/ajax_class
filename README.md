@@ -24,8 +24,8 @@ This is model for ajax requests. It reduces the need to always write custom ajax
 same way. The ajax class contains the built in functionality to update and replace content and code on the page. The selectors for the areas being
 update by the ajax call are included in the ajax json as a hash table along with the new content.
 
-Here's a small example of the ajax json:
-<pre>`	{
+Here's a small example of the ajax json:  
+	`{
 		"head": {
 			"status": 200,
 			"data": {
@@ -62,4 +62,3 @@ Here's a small example of the ajax json:
 			}
 		}
 	}`
-</pre>
