@@ -25,7 +25,7 @@ same way. The ajax class contains the built in functionality to update and repla
 update by the ajax call are included in the ajax json as a hash table along with the new content.
 
 Here's a small example of the ajax json:
-`	{
+<pre>`	{
 		"head": {
 			"status": 200,
 			"data": {
@@ -62,3 +62,4 @@ Here's a small example of the ajax json:
 			}
 		}
 	}`
+</pre>
