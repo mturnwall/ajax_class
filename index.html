@@ -1,0 +1,98 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Ajax model by mturnwall</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="javascripts/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Ajax model</h1>
+        <p>An ajax model that allows multiple portions of a page to be updated with a single ajax call and a standardized JSON model</p>
+        <p class="view"><a href="https://github.com/mturnwall/ajax_model">View the Project on GitHub <small>mturnwall/ajax_model</small></a></p>
+        <ul>
+          <li><a href="https://github.com/mturnwall/ajax_model/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/mturnwall/ajax_model/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/mturnwall/ajax_model">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h2>Purpose</h2>
+
+<p>This javascript object is written to allow a developer to make ajax calls for any project without having to write custom response handlers for every project. With just a single ajax call you can update multiple parts of a page regardless if you updating code or just content. In fact you can update code blocks on one portion of a page, just content on another portion, and even form fields on a page all with a single ajax call.</p>
+
+<p>The magic is accomplished by using a standardized JSON model. This JSON model holds key:value pairs where the key is the ID of an element on a page to update and the value portion is the code or content that will be placed into the page.</p>
+
+<p>Here is an example:  </p>
+
+<pre><code>{
+    "head": {
+    "status": 200,
+    "data": {
+        "code": 400,
+        "message": "message that can be displayed in the browser, useful when an error occurs"
+    }
+},
+"body": {
+    "update": {
+        "html": [
+            {
+                "id": "mainTitle",
+                "value": "Title Was Updated"
+            },
+            {
+                "id": "mainPara",
+                "value": "This paragraph was updated and and it now contains some &lt;strong&gt;HTML&lt;/strong&gt;."
+            }
+        ]
+    },
+    "replace": {
+        "forms": [
+            {
+                "id": "name",
+                "value": "Michael Turnwall"
+            }
+        ],
+        "content": [
+            {
+                "id": "updateMe",
+                "value": "1234567890"
+            }
+        ]
+    }
+    }
+}
+</code></pre>
+
+<h2>Usage</h2>
+
+<p>Using the ajax object is very simple. Everything is done with just one function call.</p>
+
+<pre><code>Digi.ajax.getData(url, [method], [parameters]);
+</code></pre>
+
+<p><strong>url</strong>: this is the URL you are making the Ajax call to.<br><strong>method</strong> [optional]: this is your method of choice which is usually GET or POST. Get is the default<br><strong>parameters</strong> [optional]: this is an object literal so you can pass data to the server.</p>
+
+<h2>Requirements</h2>
+
+<p>Right now jQuery 1.3+ is required. A future version will make the object framework free so you can use it with your framework of choice.</p>
+      </section>
+    </div>
+    <footer>
+      <p>Project maintained by <a href="https://github.com/mturnwall">mturnwall</a></p>
+      <p>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></p>
+    </footer>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+    
+  </body>
+</html>
