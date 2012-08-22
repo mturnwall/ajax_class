@@ -25,14 +25,14 @@ same way. The ajax class contains the built in functionality to update and repla
 update by the ajax call are included in the ajax json as a hash table along with the new content.
 
 Here's a small example of the ajax json:  
-	`{
-		"head": {
-			"status": 200,
-			"data": {
-				"code": 400,
-				"message": "message that can be displayed in the browser, useful when an error occurs"
-			}
-		},
+	`{  
+		"head": {  
+			"status": 200,  
+			"data": {  
+				"code": 400,  
+				"message": "message that can be displayed in the browser, useful when an error occurs"  
+			}  
+		},  
 		"body": {
 			"update": {
 				"html": [
