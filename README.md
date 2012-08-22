@@ -25,40 +25,40 @@ same way. The ajax class contains the built in functionality to update and repla
 update by the ajax call are included in the ajax json as a hash table along with the new content.
 
 Here's a small example of the ajax json:  
-	`{  
-		"head": {  
-			"status": 200,  
-			"data": {  
-				"code": 400,  
-				"message": "message that can be displayed in the browser, useful when an error occurs"  
-			}  
-		},  
-		"body": {
-			"update": {
-				"html": [
-					{
-						"id": "mainTitle",
-						"value": "Title Was Updated"
-					},
-					{
-						"id": "mainPara",
-						"value": "This paragraph was updated and and it now contains some <strong>HTML</strong>."
-					}
-				]
-			},
-			"replace": {
-				"forms": [
-					{
-						"id": "name",
-						"value": "Michael Turnwall"
-					}
-				],
-				"content": [
-					{
-						"id": "updateMe",
-						"value": "1234567890"
-					}
-				]
-			}
+<pre><code>{
+	"head": {
+		"status": 200,
+		"data": {
+			"code": 400,
+			"message": "message that can be displayed in the browser, useful when an error occurs"
 		}
-	}`
+	},
+	"body": {
+		"update": {
+			"html": [
+				{
+					"id": "mainTitle",
+					"value": "Title Was Updated"
+				},
+				{
+					"id": "mainPara",
+					"value": "This paragraph was updated and and it now contains some <strong>HTML</strong>."
+				}
+			]
+		},
+		"replace": {
+			"forms": [
+				{
+					"id": "name",
+					"value": "Michael Turnwall"
+				}
+			],
+			"content": [
+				{
+					"id": "updateMe",
+					"value": "1234567890"
+				}
+			]
+		}
+	}
+}</code></pre>
