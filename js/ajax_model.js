@@ -65,7 +65,7 @@ Digi.logger = function (message, type) {
 /*
 	TODO make this object purely native JS so there is no reliance of an outside framework like jQuery
 */
-Digi.ajax = (function () {
+Digi.ajax = (function ($) {
 	var that;
 	/**
 	*	convert JSON from a string to object and back again
@@ -104,7 +104,7 @@ Digi.ajax = (function () {
 			}
 			for (i=0,z=html.length; i<z; i++) {
 				try {
-					el = $j('#' + html[i].id);
+					el = $('#' + html[i].id);
 					if (!el.length) {
 						Digi.logger('Line 72 - Couldn\'t find an element with an ID of ' + html[i].id, 'error', true);
 					}
@@ -126,12 +126,12 @@ Digi.ajax = (function () {
 			content = replace.content;
 			if (typeof forms !== 'undefined') {
 				for (i=0,z=forms.length; i<z; i++) {
-					$j('#' + forms[i].id).val(forms[i].value);
+					$('#' + forms[i].id).val(forms[i].value);
 				}
 			}
 			if (typeof content !== 'undefined') {
 				for (i=0,z=content.length; i<z; i++) {
-					$j('#' + content[i].id).text(content[i].value);
+					$('#' + content[i].id).text(content[i].value);
 				}
 			}
 			
@@ -200,7 +200,7 @@ Digi.ajax = (function () {
 			if (this.jxhr) {
 				this.jxhr.abort();
 			}
-			this.jxhr = $j.ajax({
+			this.jxhr = $.ajax({
 				type: type,
 				url: url,
 				data: parameters || '',
@@ -221,7 +221,7 @@ Digi.ajax = (function () {
 		},
 		version: '0.2.1'
 	};
-})();
+})(jQuery);
 
 /**
  *	download handlebar templates and cache them for ajax calls
