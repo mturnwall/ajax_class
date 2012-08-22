@@ -1,42 +1,5 @@
 /*jshint onevar: true, sub: true, curly: true */
-/*global Handlebars: true*/
-var ajaxModel = {
-	"head": {
-		"status": 200, // is the http status code for the ajax call, can convey errors to the front-end
-		"data": {
-			"code": 400,    // can be custom status messages
-			"message": "message that can be displayed in the browser, useful when an error occurs"
-		}
-	},
-	"body": {
-		"update": {
-			"html": [
-				{   // this object updates large blocks of code
-					"id": "mainTitle",
-					"value": "Title Was Updated"
-				},
-				{
-					"id": "mainPara",
-					"value": "This paragraph was updated and and it now contains some <strong>HTML</strong>."
-				}
-			]
-		},
-		"replace": {    // this object replaces data or smaller blocks of content but no code updates
-			"forms": [
-				{
-					"id": "name",
-					"value": "Michael Turnwall"
-				}
-			],
-			"content": [
-				{
-					"id": "updateMe",
-					"value": "1234567890"
-				}
-			]
-		}
-	}
-};
+/*global Handlebars: true, console: true, $: true, jQuery: true*/
 
 /**
 *	Polyfill for Object.create()
@@ -59,11 +22,11 @@ update by the ajax call are included in the ajax json as a hash table along with
 */
 var Digi = Digi || {};
 
-/** debug default state is false */
+/** The default debug mode is off. To turn on just set Digi.debug to true */
 Digi.debug = false;
 
 /**
-*	debug console that won't break in early versions of IE
+*	debug console that won't break in early versions of IE that didn't have developer tools (IE6)
 *	@param {String|Object} message the debug message to be displayed in the browser's console
 *	@param {String} [type="log"] type of message that is being displayed. Options are
 *									log, object, error
@@ -72,32 +35,35 @@ Digi.debug = false;
 *	@author Michael Turnwall
 */
 Digi.logger = function (message, type) {
-    if (this.debug && typeof console !== 'undefined') {
-        switch (type) {
-            case 'error':
+	if (this.debug && typeof console !== 'undefined') {
+		switch (type) {
+			case 'error':
 				if (typeof arguments[2] === 'undefined') {
 					throw new Error(message);
 				} else {
 					console.warn(message);
 				}
-                break;
-            case 'object':
-                console.dir(message);
-                break;
-            default:
-                console.log(message);
-        }
-        return true;
-    }
-    return false;
+				break;
+			case 'object':
+				console.dir(message);
+				break;
+			default:
+			console.log(message);
+		}
+		return true;
+	}
+	return false;
 };
 
 /**
-*	This is model for ajax requests. It reduces the need to always write custom ajax handlers and custom callbacks since the json is always structured the
+*	This is a class for ajax requests. It reduces the need to always write custom ajax handlers and custom callbacks since the json is always structured the
 *	same way. The ajax class contains the built in functionality to update and replace content and code on the page. The selectors for the areas being
 *	update by the ajax call are included in the ajax json as a hash table along with the new content.
 *	@author Michael Turnwall
 *	@namespace Digi.ajax
+*/
+/*
+	TODO make this object purely native JS so there is no reliance of an outside framework like jQuery
 */
 Digi.ajax = (function () {
 	var that;
@@ -117,14 +83,28 @@ Digi.ajax = (function () {
 	return {
 		data: {},
 		bodyObj: '',
+		/**
+		 *	updates multiple portions of a page based on an element's ID
+		 *	this function is designed to update blocks of HTML rather than just content
+		 *	@param {Object} html an object that holds the JSON key:value pairs for the updates
+		 *	@author Michael Turnwall
+		 */
 		updateContent: function (html) {
 			var el, i, z;
 			if (typeof html === 'undefined') {
 				return false;
 			}
+			for (i in html) {
+				if (html[i].hasOwnProperty('id')) {
+					// console.log('id found');
+				}
+				if (html[i].hasOwnProperty('class')) {
+					// console.log('class found');
+				}
+			}
 			for (i=0,z=html.length; i<z; i++) {
 				try {
-					el = $('#' + html[i].id);
+					el = $j('#' + html[i].id);
 					if (!el.length) {
 						Digi.logger('Line 72 - Couldn\'t find an element with an ID of ' + html[i].id, 'error', true);
 					}
@@ -134,22 +114,44 @@ Digi.ajax = (function () {
 				}
 			}
 		},
+		/**
+		 *	updates multiple pieces of content of an HTML element based on the element's ID
+		 *	this function is designed to update blocks of content rather than HTML code
+		 *	@param {Object} replace an object that holds the JSON key:value pairs for the updates
+		 *	@author Michael Turnwall
+		 */
 		replaceContent: function (replace) {
 			var forms, content, i, z;
 			forms = replace.forms;
 			content = replace.content;
 			if (typeof forms !== 'undefined') {
 				for (i=0,z=forms.length; i<z; i++) {
-					$('#' + forms[i].id).val(forms[i].value);
+					$j('#' + forms[i].id).val(forms[i].value);
 				}
 			}
 			if (typeof content !== 'undefined') {
 				for (i=0,z=content.length; i<z; i++) {
-					$('#' + content[i].id).text(content[i].value);
+					$j('#' + content[i].id).text(content[i].value);
 				}
 			}
 			
 		},
+		updateAttributes: function (attributes) {
+			var el, i, z;
+			if (typeof attributes !== 'undefined') {
+				z = attributes.length;
+				for (i = 0; i < z; i++) {
+					el = document.getElementById(attributes[i].id);
+					el.setAttribute(attributes[i].attribute, attributes[i].value);
+				}
+			}
+		},
+		/**
+		 *	determines which update functions to call based on what is in the JSON object
+		 *	returned from the server
+		 *	@param {JSON} data json object received from the server
+		 *	@author Michael Turnwall
+		 */
 		handleResponse: function (data) {
 			this.data = data;
 			if (this.data.body.update.html) {
@@ -158,38 +160,66 @@ Digi.ajax = (function () {
 			if (this.data.body.replace) {
 				this.replaceContent(this.data.body.replace);
 			}
+			if (this.data.body.attributes) {
+				this.updateAttributes(this.data.body.attributes);
+			}
+			/*
+			if (this.data.body.templates) {
+				Digi.template.fetch(this.data.body.templates[0].templateName);
+			}
+			*/
 		},
 		handleError: function () {
-			
+			/*
+				TODO add error handling along with allowing it to be customized
+			*/
 		},
 		/**
 		*	make an ajax call to get json data for page update
+		*	this is the only method that needs to be called publicly
 		*	@param {String} url the url the ajax will get data from
 		*	@param {String} method type of ajax call GET | POST
 		*	@param {Object }[parameters] query string to send to the server as an object
 		*/
 		getData: function (url, method, parameters) {
-			var type = (typeof method !== 'undefined') ? method.toUpperCase() : 'GET';
+			var type,
+				date;
 			that = this;
+			
+			// default request type is GET
+			type = (typeof method !== 'undefined') ? method.toUpperCase() : 'GET';
+			date = +new Date();
+			
+			/*
+			if (this.expires && (date < this.expires)) {
+				console.log('still cached');
+				return false;
+			}
+			*/
 			// if user is making changes quickly abort the previous request
 			if (this.jxhr) {
 				this.jxhr.abort();
 			}
-			this.jxhr = $.ajax({
+			this.jxhr = $j.ajax({
 				type: type,
 				url: url,
 				data: parameters || '',
 				dataType: 'json',
 				success: function (data) {
+					data.head.expires = +new Date() + 60000;
+					if (data.head.expires) {
+						that.expires = data.head.expires;
+					}
 					that.handleResponse(data);
 				},
 				error: function (jqXHR, textStatus, errorThrown) {
-					Digi.logger('(Line 97) ' + jqXHR.status + ': ' + errorThrown, 'error');
+					Digi.logger('(Line 114) ' + jqXHR.status + ': ' + errorThrown, 'error');
 					that.handleError(textStatus, errorThrown);
 				}
 			});
+			return true;
 		},
-		version: '0.2'
+		version: '0.2.1'
 	};
 })();
 
@@ -201,44 +231,61 @@ Digi.ajax = (function () {
 Digi.template = (function () {
 	var ajax = Object.create(Digi),
 		content = { // content for testin gp
-			title: 'Page Updated',
-			content: 'This is new content',
+			title: 'Template Updated',
+			content: 'This is new content for the template',
 			formValue: 'Jane Doe'	
-		};
+		},
+		that;
 	return {
-		version: '0.1',
+		VERSION: '0.3',
 		cache: {},
+		map: {},
 		path: 'js/handlebars/templates/',	// needs trailing slash
 		extension: '.handlebars',			// needs the period
-		fetchData: function (url) {
-			this.render();
+		fetchData: function (name, callback) {
+			$.get(this.map[name].dataUrl, function (data) {
+				callback(that.cache[name], data);
+			});
 		},
-		fetch: function (name) {
-			var that = this,
+		/** get templates on page load */
+		preFetch: function () {
+			var tName,
+				templates = this.map;
 				url = this.path + name + this.extension;
+			for (tName in templates) {
+				console.log(tName);
+				this.fetch(tName);
+			}
+			that = this;
+		},
+		fetch: function (name, callback) {
+			var url = this.path + name + this.extension,
+				date = +new Date();
 			if (this.isCached(name)) {
 				content.title = 'Template Cached';
-				this.render(this.cache[name], name);
+				// this.render(this.cache[name], name);
 			} else {
 				content.title = 'Template Not Cached';
 				$.get(url, function (data) {
-					that.render(data, name);
+					that.setCache(name, data);
 				});
 			}
 		},
-		render: function (data, name, callback) {
-			var source = data,
-				template = Handlebars.compile(data);
-			$('#main').html(template(content));
-			if (!this.isCached(name)) {
-				this.setCache(name, data);
+		render: function (name, callback) {
+			// $('#templateUpdate').html(this.cache[name](content));
+			// return true;
+			if (this.isCached(name)) {
+				this.fetchData(name, callback);
+			} else {
+				this.fetch(name, callback);
+				
 			}
 		},
 		isCached: function (name) {
 			return !!this.cache[name];
 		},
 		setCache: function (key, value) {
-			this.cache[key] = value;
+			this.cache[key] = Handlebars.compile(value);
 		}
 	};
 })();
