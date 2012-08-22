@@ -4,9 +4,7 @@
 		"data": {
 			"code": 400,
 			"message": "message that can be displayed in the browser, useful when an error occurs"
-		},
-		"cache": true,
-		"expires": 0
+		}
 	},
 	"body": {
 		"update": {
@@ -17,10 +15,6 @@
 				},
 				{
 					"id": "mainPara",
-					"value": "This paragraph was updated and and it now contains some <strong>HTML</strong>."
-				},
-				{
-					"class": "mainPara",
 					"value": "This paragraph was updated and and it now contains some <strong>HTML</strong>."
 				}
 			]
@@ -38,16 +32,6 @@
 					"value": "1234567890"
 				}
 			]
-		},
-		"templates": [
-			{
-				"templateName": "test",
-				"value": { 
-					"title": "Page Updated",
-					"content": "This is new content",
-					"formValue": "Jane Doe"
-				}
-			}
-		]
+		}
 	}
 }

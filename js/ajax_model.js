@@ -1,59 +1,7 @@
 /*jshint onevar: true, sub: true, curly: true */
 /*global Handlebars: true, console: true, $: true, jQuery: true*/
 
-/**
-*	Polyfill for Object.create()
-*	use this to create new objects
-*/
-if (!Object.create) {
-	Object.create = function (o) {
-		if (arguments.length > 1) {
-			throw new Error('Sorry the polyfill Object.create only accepts the first parameter.');
-		}
-		function F() {}
-		F.prototype = o;
-		return new F();
-	};
-}
-/**
-This is model for ajax requests. It reduces the need to always write custom ajax handlers and custom callbacks since the json is always structured the
-same way. The ajax class contains the built in functionality to update and replace content and code on the page. The selectors for the areas being
-update by the ajax call are included in the ajax json as a hash table along with the new content.
-*/
 var Digi = Digi || {};
-
-/** The default debug mode is off. To turn on just set Digi.debug to true */
-Digi.debug = false;
-
-/**
-*	debug console that won't break in early versions of IE that didn't have developer tools (IE6)
-*	@param {String|Object} message the debug message to be displayed in the browser's console
-*	@param {String} [type="log"] type of message that is being displayed. Options are
-*									log, object, error
-*	@param {String} [quiet] when displaying an error setting this value to true will act like a warning
-*							this is helpful when you don't want an error to stop javascript executing
-*	@author Michael Turnwall
-*/
-Digi.logger = function (message, type) {
-	if (this.debug && typeof console !== 'undefined') {
-		switch (type) {
-			case 'error':
-				if (typeof arguments[2] === 'undefined') {
-					throw new Error(message);
-				} else {
-					console.warn(message);
-				}
-				break;
-			case 'object':
-				console.dir(message);
-				break;
-			default:
-			console.log(message);
-		}
-		return true;
-	}
-	return false;
-};
 
 /**
 *	This is a class for ajax requests. It reduces the need to always write custom ajax handlers and custom callbacks since the json is always structured the
@@ -66,7 +14,6 @@ Digi.logger = function (message, type) {
 	TODO make this object purely native JS so there is no reliance of an outside framework like jQuery
 */
 Digi.ajax = (function ($) {
-	var that;
 	/**
 	*	convert JSON from a string to object and back again
 	*	@param data JSON data to be converted
@@ -183,12 +130,13 @@ Digi.ajax = (function ($) {
 		*/
 		getData: function (url, method, parameters) {
 			var type,
-				date;
-			that = this;
+				date,
+				that;
 			
 			// default request type is GET
 			type = (typeof method !== 'undefined') ? method.toUpperCase() : 'GET';
 			date = +new Date();
+			that = this;
 			
 			/*
 			if (this.expires && (date < this.expires)) {
@@ -222,70 +170,3 @@ Digi.ajax = (function ($) {
 		version: '0.2.1'
 	};
 })(jQuery);
-
-/**
- *	download handlebar templates and cache them for ajax calls
- *	@author Michael Turnwall
- *	@namespace Digi.template
- */
-Digi.template = (function () {
-	var ajax = Object.create(Digi),
-		content = { // content for testin gp
-			title: 'Template Updated',
-			content: 'This is new content for the template',
-			formValue: 'Jane Doe'	
-		},
-		that;
-	return {
-		VERSION: '0.3',
-		cache: {},
-		map: {},
-		path: 'js/handlebars/templates/',	// needs trailing slash
-		extension: '.handlebars',			// needs the period
-		fetchData: function (name, callback) {
-			$.get(this.map[name].dataUrl, function (data) {
-				callback(that.cache[name], data);
-			});
-		},
-		/** get templates on page load */
-		preFetch: function () {
-			var tName,
-				templates = this.map;
-				url = this.path + name + this.extension;
-			for (tName in templates) {
-				console.log(tName);
-				this.fetch(tName);
-			}
-			that = this;
-		},
-		fetch: function (name, callback) {
-			var url = this.path + name + this.extension,
-				date = +new Date();
-			if (this.isCached(name)) {
-				content.title = 'Template Cached';
-				// this.render(this.cache[name], name);
-			} else {
-				content.title = 'Template Not Cached';
-				$.get(url, function (data) {
-					that.setCache(name, data);
-				});
-			}
-		},
-		render: function (name, callback) {
-			// $('#templateUpdate').html(this.cache[name](content));
-			// return true;
-			if (this.isCached(name)) {
-				this.fetchData(name, callback);
-			} else {
-				this.fetch(name, callback);
-				
-			}
-		},
-		isCached: function (name) {
-			return !!this.cache[name];
-		},
-		setCache: function (key, value) {
-			this.cache[key] = Handlebars.compile(value);
-		}
-	};
-})();
