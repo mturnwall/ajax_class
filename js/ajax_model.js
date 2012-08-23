@@ -53,11 +53,11 @@ Digi.ajax = (function ($) {
 				try {
 					el = $('#' + html[i].id);
 					if (!el.length) {
-						Digi.logger('Line 72 - Couldn\'t find an element with an ID of ' + html[i].id, 'error', true);
+						throw new Error('Line 54 - Couldn\'t find an element with an ID of ' + html[i].id);
 					}
 					el.html(html[i].value);
 				} catch (err) {
-					Digi.logger(err.name + ' ' + err.message, 'error');
+					console.error(err.name + ' ' + err.message);
 				}
 			}
 		},
@@ -79,6 +79,45 @@ Digi.ajax = (function ($) {
 			if (typeof content !== 'undefined') {
 				for (i=0,z=content.length; i<z; i++) {
 					$('#' + content[i].id).text(content[i].value);
+				}
+			}
+			
+		},
+		/**
+		 *	appends content to the page either before or after an element
+		 *	@param {Object} data json object that contains the JSON key:value pairs for elements that will get added to the page
+		 *	@example
+		 *	Here is an example of the json is structured
+		 *	"after": [
+		 *		{
+		 *			"id": "main",
+		 *			"value": [
+		 *				"<br><br><div>First div that is appended</div>",
+		 *				"<div>Another appended div element</div>"
+		 *			]
+		 *		}
+		 *	],	
+		 */
+		appendContent: function (data) {
+			var after, before, el, values, i, j, x, z;
+			if (data.after) {
+				after = data.after;
+				for (i=0, z=after.length; i<z; i++) {
+					el = $('#' + after[i].id);
+					values = after[i].value;
+					for (j=0, x=values.length; j<x; j++) {
+						el.append(values[j]);
+					}
+				}
+			}
+			if (data.before) {
+				before = data.before;
+				for (i=0, z=before.length; i<z; i++) {
+					el = $('#' + before[i].id);
+					values = before[i].value;
+					for (j=0, x=values.length; j<x; j++) {
+						el.before(values[j]);
+					}
 				}
 			}
 			
@@ -106,6 +145,9 @@ Digi.ajax = (function ($) {
 			}
 			if (this.data.body.replace) {
 				this.replaceContent(this.data.body.replace);
+			}
+			if (this.data.body.append) {
+				this.appendContent(this.data.body.append);
 			}
 			if (this.data.body.attributes) {
 				this.updateAttributes(this.data.body.attributes);
