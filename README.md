@@ -58,6 +58,25 @@ Here's a small example of the ajax json:
 						"value": "1234567890"
 					}
 				]
+			},
+			"append": {
+				"after": [
+					{
+						"id": "main",
+						"value": [
+							"<br><br><div>First div that is appended</div>",
+							"<div>Another appended div element</div>"
+						]
+					}
+				],
+				"before": [
+					{
+						"id": "mainPara",
+						"value": [
+							"<div><strong>This div is appended before an element.</strong></div>"
+						]
+					}
+				]
 			}
 		}
 	}
