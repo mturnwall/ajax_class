@@ -34,43 +34,62 @@
 <p>This magic is accomplished by using a standardized JSON model. This JSON model holds key:value pairs where the key is the ID of an element on a page to update and the value portion is the code or content that will be placed into the page.</p>
 
 <p>Here is an example:  </p>
-
-<pre><code>{
-    "head": {
-    "status": 200,
-    "data": {
-        "code": 400,
-        "message": "message that can be displayed in the browser, useful when an error occurs"
-    }
-},
-"body": {
-    "update": {
-        "html": [
-            {
-                "id": "mainTitle",
-                "value": "Title Was Updated"
-            },
-            {
-                "id": "mainPara",
-                "value": "This paragraph was updated and and it now contains some &lt;strong&gt;HTML&lt;/strong&gt;."
-            }
-        ]
-    },
-    "replace": {
-        "forms": [
-            {
-                "id": "name",
-                "value": "Michael Turnwall"
-            }
-        ],
-        "content": [
-            {
-                "id": "updateMe",
-                "value": "1234567890"
-            }
-        ]
-    }
-    }
+<pre><code>
+{
+   	"head": {
+    	"status": 200,
+    	"data": {
+        	"code": 400,
+        	"message": "message that can be displayed in the browser, useful when an error occurs"
+    	}
+	},
+	"body": {
+   		"update": {
+       		"html": [
+	            {
+	                "id": "mainTitle",
+	                "value": "Title Was Updated"
+	            },
+	            {
+	                "id": "mainPara",
+	                "value": "This paragraph was updated and and it now contains some &lt;strong&gt;HTML&lt;/strong&gt;."
+	            }
+	        ]
+   		},
+   		"replace": {
+	        "forms": [
+	            {
+	                "id": "name",
+	                "value": "Michael Turnwall"
+	            }
+	        ],
+	        "content": [
+	            {
+	                "id": "updateMe",
+	                "value": "1234567890"
+	            }
+	        ]
+	    },
+		"append": {
+			"after": [
+				{
+					"id": "main",
+					"value": [
+						"&lt;br&gt;&lt;br&gt;&lt;div&gt;First div that is appended&lt;/div&gt;",
+						"&lt;div&gt;Another appended div element&lt;/div&gt;"
+					]
+				}
+			],
+			"before": [
+				{
+					"id": "mainPara",
+					"value": [
+						"&lt;div&gt;&lt;strong&gt;This div is appended before an element.&lt;/strong&gt;&lt;/div&gt;"
+					]
+				}
+			]
+		}
+   	}
 }
 </code></pre>
 
