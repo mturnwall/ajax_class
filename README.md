@@ -20,9 +20,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-This is model for ajax requests. It reduces the need to always write custom ajax handlers and custom callbacks since the json is always structured the
-same way. The ajax class contains the built in functionality to update and replace content and code on the page. The selectors for the areas being
-update by the ajax call are included in the ajax json as a hash table along with the new content.
+This is a javascript class for ajax requests. It reduces the need to always write custom ajax handlers and custom callbacks since the json is always structured the same way. The ajax class contains the built in functionality to update and replace content and code on the page. The selectors for the areas being update by the ajax call are included in the ajax json as a hash table along with the new content.
 
 Here's a small example of the ajax json:
 
