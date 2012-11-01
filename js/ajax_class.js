@@ -1,7 +1,7 @@
 /*jshint onevar: true, sub: true, curly: true */
 /*global Handlebars: true, console: true, $: true, jQuery: true*/
 
-var Digi = Digi || {};
+var DA = DA || {};
 
 /**
 *	This is a class for ajax requests. It reduces the need to always write custom ajax handlers and custom callbacks since the json is always structured the
@@ -13,7 +13,7 @@ var Digi = Digi || {};
 /*
 	TODO make this object purely native JS so there is no reliance of an outside framework like jQuery
 */
-Digi.ajax = (function ($) {
+DA = (function ($) {
 	/**
 	*	convert JSON from a string to object and back again
 	*	@param data JSON data to be converted
@@ -96,7 +96,7 @@ Digi.ajax = (function ($) {
 		 *				"<div>Another appended div element</div>"
 		 *			]
 		 *		}
-		 *	],	
+		 *	],
 		 */
 		appendContent: function (data) {
 			var after, before, el, values, i, j, x, z;
@@ -167,14 +167,20 @@ Digi.ajax = (function ($) {
 		*	make an ajax call to get json data for page update
 		*	this is the only method that needs to be called publicly
 		*	@param {String} url the url the ajax will get data from
-		*	@param {String} method type of ajax call GET | POST
-		*	@param {Object }[parameters] query string to send to the server as an object
+		*	@param {String} [method] type of ajax call GET | POST
+		*	@param {Object} [parameters] query string to send to the server as an object
 		*/
-		getData: function (url, method, parameters) {
+		getData: function (url, method, parameters, callback) {
 			var type,
 				date,
+				opts,
 				that;
 			
+			opts = (method && typeof method === 'object') ? $.extend({}, method) : {
+				method: (typeof method !== 'undefined') ? method.toUpperCase() : 'GET',
+				parameters: ''
+			};
+
 			// default request type is GET
 			type = (typeof method !== 'undefined') ? method.toUpperCase() : 'GET';
 			date = +new Date();
@@ -203,7 +209,6 @@ Digi.ajax = (function ($) {
 					that.handleResponse(data);
 				},
 				error: function (jqXHR, textStatus, errorThrown) {
-					Digi.logger('(Line 114) ' + jqXHR.status + ': ' + errorThrown, 'error');
 					that.handleError(textStatus, errorThrown);
 				}
 			});

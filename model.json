@@ -15,7 +15,7 @@
 				},
 				{
 					"id": "mainPara",
-					"value": "This paragraph was updated and and it now contains some <strong>HTML</strong>."
+					"value": "This \"paragraph\" was updated and and it now contains some <strong>HTML</strong>."
 				}
 			]
 		},
